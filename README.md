@@ -18,6 +18,9 @@
 ### 사용 포트: 8080(Spring), 5505(LiverServer)
 </br>
 
+### Depencency : Gradle, Jpa, Lombok, 
+</br>
+
 # 🖼️ 과제 요건
 
 ### 고정 확장자, 커스텀 확장자 DB Entity 구축
