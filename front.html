@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파일 확장자 차단 설정</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+        .checkbox-group {
+            margin-bottom: 20px;
+        }
+        .checkbox-group label {
+            margin-right: 10px;
+        }
+        #custom-extensions {
+            border: 1px solid #ddd;
+            padding: 10px;
+            min-height: 100px;
+            margin-bottom: 20px;
+        }
+        .extension-item {
+            background: #f3f3f3;
+            border: 1px solid #e1e1e1;
+            padding: 5px 10px;
+            display: inline-block;
+            margin: 5px;
+            border-radius: 15px;
+        }
+        .extension-item button {
+            margin-left: 10px;
+            border: none;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .file-input-area {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>파일 확장자 차단 설정</h1>
+        
+        <div id="fixed-extensions" class="checkbox-group">
+            <!-- Default extensions will be loaded here -->
+            <label><input type="checkbox" value="bat"> .bat</label>
+            <label><input type="checkbox" value="cmd"> .cmd</label>
+            <label><input type="checkbox" value="com"> .com</label>
+            <label><input type="checkbox" value="cpl"> .cpl</label>
+            <label><input type="checkbox" value="exe"> .exe</label>
+            <label><input type="checkbox" value="scr"> .scr</label>
+            <label><input type="checkbox" value="js"> .js</label>
+        </div>
+
+        <div id="custom-extension-input-area">
+            <input type="text" id="custom-extension-input" placeholder="확장자 입력" maxlength="20">
+            <button id="add-extension">추가</button>
+        </div>
+
+        <div id="custom-extensions">
+            <!-- Custom extensions will be added here -->
+            <!-- <span class="extension-item">sh <button class="delete-btn">X</button></span>
+            <span class="extension-item">ju <button class="delete-btn">X</button></span>
+            <span class="extension-item">ch <button class="delete-btn">X</button></span> -->
+        </div>
+
+        <!-- File input and submit button -->
+        <div class="file-input-area">
+            <input type="file" id="file-input" multiple>
+            <button id="submit-btn">제출</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: 'http://localhost:8080/extensions/fixed/status',
+                type: 'GET',
+                success: function(extensions) {
+                    //console.log(extensions)
+                    extensions.forEach(function(ext) {
+                        
+                        $('#fixed-extensions input[type="checkbox"][value="' + ext.extension + '"]').prop('checked', ext.checked);
+                    });
+                },
+                error: function(error) {
+                    console.error('Error fetching extension status:', error);
+                }
+            })
+
+            $.ajax({
+                url: 'http://localhost:8080/extensions/custom/status',
+                type: 'GET',
+                success: function(extensions) {
+                    console.log(extensions);
+
+                    var customExtensionsContainer = $('#custom-extensions');
+                    customExtensionsContainer.empty();
+
+                    extensions.forEach(function(ext) {
+                        customExtensionsContainer.append('<span class="extension-item">' + ext.extension + ' <button class="delete-btn">X</button></span>');
+                    });
+          
+                    },
+                    error: function(error) {
+                        console.log('Error fetching custom extensions:', error);
+                }
+            });
+
+            $('#fixed-extensions input[type="checkbox"]').change(function() {
+                var extension = $(this).val();
+                var isChecked = $(this).is(':checked');
+                $.ajax({
+                    url: 'http://localhost:8080/extensions/save',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ extension: extension, isChecked: isChecked }),
+                    success: function(response) {
+                    // 성공 처리
+                    },
+                    error: function(error) {
+                        // 에러 처리
+                    }
+                });
+            });
+
+            function addExtension() {
+                var ext = $('#custom-extension-input').val().trim();
+
+                if (ext.length > 20) {
+                    alert('확장자는 20자 이하만 가능합니다');
+                    return; 
+                }
+
+                if (ext && $('#custom-extensions .extension-item').length < 200) {
+                    $('#custom-extension-input').val('');
+
+                    $.ajax({
+                        url: 'http://localhost:8080/extensions/add',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ userId: 1, extension: ext }),
+                        success: function(response) {
+                            if (response.success) {
+                                $('#custom-extensions').append(`<span class="extension-item">${ext} <button class="delete-btn">X</button></span>`);
+                            } else {
+                                alert('추가하는데 문제가 발생했습니다');
+                            }
+                        },
+                        error: function(error) {
+                            alert('추가 요청을 처리할 수 없습니다');
+                        }
+                    });
+                } else if (!ext) {
+                    alert('확장자를 입력해주세요');
+                } else {
+                    alert('등록 가능한 확장자 개수를 초과하였습니다');
+                }
+            }
+
+            $('#add-extension').on('click', addExtension);
+
+            $('#custom-extension-input').on('keypress', function(e) {
+                if (e.which === 13) {  // Enter key pressed
+                    addExtension();
+                }
+            });
+            
+            // $('#add-extension').on('click', function() {
+            //     var ext = $('#custom-extension-input').val().trim();
+
+            //     if(ext && $('#custom-extensions .extension-item').length < 200) {
+            //         $('#custom-extension-input').val('');
+            //         $.ajax({
+            //             url:'http://localhost:8080/extensions/add',
+            //             type: 'POST',
+            //             contentType: 'application/json',
+            //             data: JSON.stringify({userId: 1, extension: ext}),
+            //             success: function(response) {
+            //                 if(response.success) {
+            //                     $('#custom-extensions').append(`<span class="extension-item">${ext} <button class="delete-btn">X</button></span>`);
+            //                 } else {
+            //                     alert('추가하는데 문제가 발생했습니다');
+            //                 }
+            //             },
+            //             error: function(error) {
+            //                 alert('추가 요청을 처리할 수 없습니다');
+            //             }
+            //         })
+            //         }else if (!ext) {
+            //             alert('확장자를 입력해주세요!');
+            //         }else {
+            //             alert('등록 가능한 확장자 개수를 초과하였습니다');
+            //         }
+            //     });
+
+            $('#custom-extensions').on('click', '.delete-btn', function() {
+            var $item = $(this).parent();
+            var extension = $item.text().trim().split(' ')[0];
+            console.log(extension);
+
+            $.ajax({
+                url: 'http://localhost:8080/extensions/delete?extension=' + encodeURIComponent(extension),
+                type: 'DELETE',
+                
+                success: function(response) {
+                    if(response.success) {
+                        // 성공적으로 삭제되면 리스트에서 제거
+                        $item.remove();
+                    } else {
+                        // 에러 처리
+                        alert('삭제하는데 문제가 발생했습니다.');
+                    }
+                },
+                error: function() {
+                    alert('삭제 요청을 처리할 수 없습니다');
+                }
+            });
+        });
+
+            // Here you would add the jQuery to handle the file input and form submission
+            $('#submit-btn').on('click', function() {
+                var files = $('#file-input')[0].files;
+                var blockedExtensions = [];
+
+                            // 고정 확장자와 커스텀 확장자를 배열에 저장
+                $('#fixed-extensions input:checked').each(function() {
+                    blockedExtensions.push($(this).val());
+                });
+                $('#custom-extensions .extension-item').each(function() {
+                    var extension = $(this).text().trim().split(' ')[0]; // 'X' 버튼 텍스트 제외
+                    blockedExtensions.push(extension);
+                });
+
+                // 파일 확장자를 검사하는 함수
+                function isBlockedExtension(file) {
+                    var ext = file.name.split('.').pop().toLowerCase();
+                    return blockedExtensions.indexOf(ext) !== -1;
+                }
+
+                // 파일 유효성 검사
+                var hasBlockedFile = false;
+                for (var i = 0; i < files.length; i++) {
+                    if (isBlockedExtension(files[i])) {
+                        hasBlockedFile = true;
+                        break;
+                    }
+                }
+
+                    // 차단된 확장자를 가진 파일이 있으면 오류 메시지 표시
+                if (hasBlockedFile) {
+                    alert('차단된 확장자의 파일이 포함되어 있습니다.');
+                    return; // 함수 종료
+                }else {
+                    alert('파일의 확장자가 올바른 형식입니다');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
