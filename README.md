@@ -13,6 +13,14 @@
 # 🏇 API 명세서
 [Postman](https://lunar-flare-28188.postman.co/workspace/My-Workspace~191c2db4-c9f2-4904-8c0f-0163d017b862/documentation/25143450-97413689-2a37-420f-8817-e1221f1ea66f)
 
+<br/>
+
+<img alt="spring" src="https://github.com/hufs0529/flow/assets/81501114/ffef82ab-c862-425f-82d8-dcacbab0343b" alt="Logo" width="600" height="300">
+
+#### 명세서 내 PUT, POST가 화면 UI내 GET으로 표기되는 오류
+
+<br />
+
 # 🏇 Configuration & Dev Tools
 ### FrontEnd : jQuery
 ### Backend : Spring
