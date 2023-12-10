@@ -5,8 +5,7 @@
     <br />
   </h1>
 
-### 🙌  시연 영상: [https://youtu.be/5-_bcY2WcaE](https://www.youtube.com/watch?v=Cr9pq8XZBUA)
-
+### 🙌  시연 영상: https://www.youtube.com/watch?v=XCigQC8YIkA
 # 🤖 ERD
   <img width="556" alt="erd" src="https://github.com/hufs0529/flow/assets/81501114/24762f9e-fe86-4899-b6c0-9ec0472c7731">
 
