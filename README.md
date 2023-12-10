@@ -10,6 +10,9 @@
 # 🤖 ERD
   <img width="556" alt="erd" src="https://github.com/hufs0529/flow/assets/81501114/24762f9e-fe86-4899-b6c0-9ec0472c7731">
 
+# 🏇 API 명세서
+[Postman](https://lunar-flare-28188.postman.co/workspace/My-Workspace~191c2db4-c9f2-4904-8c0f-0163d017b862/documentation/25143450-97413689-2a37-420f-8817-e1221f1ea66f)
+
 # 🏇 Configuration & Dev Tools
 ### FrontEnd : jQuery
 ### Backend : Spring
