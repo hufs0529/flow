@@ -23,6 +23,7 @@
 # 🏇 Configuration & Dev Tools
 ### FrontEnd : jQuery
 ### Backend : Spring
+### DB: MySQL
 </br>
 
 ### 사용 포트: 8080(Spring), 5505(LiverServer)
